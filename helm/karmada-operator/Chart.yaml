@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: "1.16.0"
+dependencies:
+- condition: cert-manager.enabled
+  name: cert-manager
+  repository: https://charts.jetstack.io/cert-manager
+  version: v1.10.0
+description: A Helm chart for Karmada Operator
+name: karmada-operator
+type: application
+version: 0.1.0
+

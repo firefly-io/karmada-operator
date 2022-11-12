@@ -1,0 +1,26 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: karmada-operator-webhook
+  labels:
+    app: karmada-operator-webhook
+  annotations:
+    cert-manager.io/inject-ca-from: karmada-system/karmada-operator-webhook-serving-cert
+webhooks:
+- name: karmadas
+  rules:
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: ["operator.karmada.firefly.io"]
+    apiVersions: ["v1alpha1"]
+    resources: ["karmadas"]
+    scope: "Namespaced"
+  clientConfig:
+    service:
+      name: karmada-operator-webhook
+      namespace: karmada-system
+      path: /mutate-karmada-v1alpha1
+      port: 443
+  failurePolicy: Fail
+  sideEffects: None
+  admissionReviewVersions: ["v1"]
+  timeoutSeconds: 3

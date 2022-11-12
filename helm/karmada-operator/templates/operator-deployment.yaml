@@ -1,0 +1,21 @@
+kind: Deployment
+metadata:
+  name: karmada-operator
+  namespace: karmada-system
+spec:
+  selector:
+    matchLabels:
+      app: karmada-operator
+  template:
+    metadata:
+      labels:
+        app: karmada-operator
+    spec:
+      serviceAccountName: karmada-operator
+      containers:
+      - command:
+        - /bin/karmada-operator
+        - --v=4
+        image: ghcr.io/firefly-io/karmada-operator
+        imagePullPolicy: Always
+        name: karmada-operator

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: karmada-operator-webhook
+  namespace: karmada-system
+  labels:
+    app: karmada-operator-webhook
+spec:
+  selector:
+    matchLabels:
+      app: karmada-operator-webhook
+  template:
+    metadata:
+      labels:
+        app: karmada-operator-webhook
+    spec:
+      serviceAccountName: firefly-controller-manager
+      containers:
+        - name: karmada-operator-webhook
+          image: ghcr.io/firefly-io/karmada-operator-webhook
+          imagePullPolicy: Always
+          command:
+            - /bin/karmada-operator-webhook
+            - --bind-address=0.0.0.0
+            - --secure-port=8443
+            - --cert-dir=/var/serving-cert
+            - --v=4
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+            - name: cert
+              mountPath: /var/serving-cert
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8443
+              scheme: HTTPS
+      volumes:
+        - name: cert
+          secret:
+            secretName: karmada-operator-webhook-server-cert

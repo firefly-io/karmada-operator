@@ -1,0 +1,16 @@
+FROM golang as builder
+
+WORKDIR /go/src/github.com/firefly-io/karmada-operator
+
+COPY . /go/src/github.com/firefly-io/karmada-operator 
+RUN cd /go/src/github.com/firefly-io/karmada-operator && \
+    go build -o /bin/karmada-operator-webhook cmd/webhook/webhook.go
+
+
+# Use distroless as minimal base image to package the manager binary
+# Refer to https://github.com/GoogleContainerTools/distroless for more details
+FROM gcr.io/distroless/base:nonroot
+
+WORKDIR /go/src/github.com/firefly-io/karmada-operator
+COPY --from=builder /bin/karmada-operator-webhook  /bin/karmada-operator-webhook
+USER 65532:65532
